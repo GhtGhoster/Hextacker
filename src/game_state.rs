@@ -140,6 +140,12 @@ impl Queue {
         }
         ret
     }
+
+    pub fn reset(&mut self) {
+        self.queue.clear();
+        self.add_bag();
+        self.add_bag();
+    }
 }
 
 pub struct PieceGen {
@@ -217,6 +223,7 @@ impl GameState {
     }
 
     pub fn reset(&mut self) {
+        self.queue.reset();
         self.matrix.field = vec![' '; self.matrix.height*self.matrix.width];
         self.spawn_next_piece();
         self.hold_piece = Piece::new([(0, 0), (0, 0), (0, 0), (0, 0)], ' ');
@@ -262,12 +269,14 @@ impl GameState {
 
     pub fn hold(&mut self) {
         if self.hold_piece.name == ' ' {
+            self.curr_piece = self.piece_gen.translate(&self.curr_piece.name);
             self.set_pos_spawn();
             self.hold_piece = self.curr_piece.clone();
             //hold_piece.position = (4, (matrix.height - matrix.playable_height - 2) as isize);
             
             self.spawn_next_piece();
         } else {
+            self.curr_piece = self.piece_gen.translate(&self.curr_piece.name);
             self.set_pos_spawn();
             mem::swap(&mut self.hold_piece, &mut self.curr_piece);
         }

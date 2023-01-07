@@ -1,14 +1,14 @@
 
 mod game_state;
 mod hex;
-mod control;
+mod input;
 
 use game_state::*;
 use hex::*;
 //use control::*;
 
 use std::collections::HashMap;
-use control::ControlSetting;
+use input::Controls;
 
 use macroquad::prelude::*;
 
@@ -53,7 +53,7 @@ async fn main() {
 
     let mut game_state = GameState::new(width, height, playable_height);
 
-    let controls = ControlSetting::default();
+    let controls = Controls::default();
 
     let background = BLACK;
     let border = DARKGRAY;
