@@ -1,5 +1,7 @@
 cargo build --release --target wasm32-unknown-unknown
 
+mkdir wbindgen
+
 wasm-bindgen --target web --out-dir wbindgen/ target/wasm32-unknown-unknown/release/hextacker.wasm
 
 cp ./wbindgen/hextacker.js ./hextacker.js
@@ -20,8 +22,8 @@ get-content .\hextacker.js | %{$_ -replace [regex]::Escape("const imports = getI
 rm hextacker.js
 mv hextacker.tmp hextacker.js
 
-rm ./webtest/hextacker.js
-mv ./hextacker.js ./webtest/hextacker.js
+rm ./web_res/hextacker.js
+mv ./hextacker.js ./web_res/hextacker.js
 
-rm ./webtest/hextacker_bg.wasm
-mv ./wbindgen/hextacker_bg.wasm ./webtest/hextacker_bg.wasm
+rm ./web_res/hextacker_bg.wasm
+mv ./wbindgen/hextacker_bg.wasm ./web_res/hextacker_bg.wasm
