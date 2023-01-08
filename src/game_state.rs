@@ -188,12 +188,17 @@ impl PieceGen {
 }
 
 pub enum Rotation {
-    // how many 60 degree CW rotations the enum element equates to
-    CW = 1,
-    CCW = 5,
-    CW120 = 2,
-    CCW120 = 4,
+    // how many 60 degree clock-wise rotations the enum element equates to
+    Cw = 1,
+    Ccw = 5,
+    Cw120 = 2,
+    Ccw120 = 4,
     Center = 3,
+}
+
+pub enum Direction {
+    Left,
+    Right,
 }
 
 pub struct GameState {
@@ -238,33 +243,50 @@ impl GameState {
         self.set_pos_spawn();
     }
 
-    pub fn move_left(&mut self) {
+    pub fn move_direction(&mut self, direction: &Direction) -> bool {
+        match direction {
+            Direction::Left => {
+                self.move_left()
+            }
+            Direction::Right => {
+                self.move_right()
+            }
+        }
+    }
+
+    pub fn move_left(&mut self) -> bool {
         self.curr_piece.position.0 -= 1;
         if self.matrix.collide(&self.curr_piece) {
             self.curr_piece.position.1 += 1;
             if self.matrix.collide(&self.curr_piece) {
                 self.curr_piece.position.0 += 1;
                 self.curr_piece.position.1 -= 1;
+                return false;
             }
         }
+        return true;
     }
 
-    pub fn move_right(&mut self) {
+    pub fn move_right(&mut self) -> bool {
         self.curr_piece.position.0 += 1;
         if self.matrix.collide(&self.curr_piece) {
             self.curr_piece.position.1 -= 1;
             if self.matrix.collide(&self.curr_piece) {
                 self.curr_piece.position.0 -= 1;
                 self.curr_piece.position.1 += 1;
+                return false;
             }
         }
+        return true;
     }
 
-    pub fn move_down(&mut self) {
+    pub fn move_down(&mut self) -> bool{
         self.curr_piece.position.1 += 1;
         if self.matrix.collide(&self.curr_piece) {
             self.curr_piece.position.1 -= 1;
+            return false;
         }
+        return true;
     }
 
     pub fn hold(&mut self) {

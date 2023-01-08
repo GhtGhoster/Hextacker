@@ -5,10 +5,9 @@ mod input;
 
 use game_state::*;
 use hex::*;
-//use control::*;
+use input::*;
 
 use std::collections::HashMap;
-use input::Controls;
 
 use macroquad::prelude::*;
 
@@ -52,8 +51,7 @@ async fn main() {
     let queue_view = 4;
 
     let mut game_state = GameState::new(width, height, playable_height);
-
-    let controls = Controls::default();
+    let mut input_processor = InputProcessor::new(Controls::default(), Handling::default());
 
     let background = BLACK;
     let border = DARKGRAY;
@@ -96,44 +94,13 @@ async fn main() {
         //     curr_piece.position = (4, (matrix.height - matrix.playable_height - 2) as isize);
         // }
 
-        if is_key_pressed(controls.move_left) {
-            game_state.move_left();
-        }
-        if is_key_pressed(controls.move_right) {
-            game_state.move_right();
-        }
-        if is_key_pressed(controls.soft_drop) {
-            game_state.move_down();
-        }
-        if is_key_pressed(controls.hold) {
-            game_state.hold();
-        }
-        if is_key_pressed(controls.rotate_ccw) {
-            game_state.rotate(Rotation::CCW);
-        }
-        if is_key_pressed(controls.rotate_cw) {
-            game_state.rotate(Rotation::CW);
-        }
-        if is_key_pressed(controls.rotate_ccw_120) {
-            game_state.rotate(Rotation::CCW120);
-        }
-        if is_key_pressed(controls.rotate_cw_120) {
-            game_state.rotate(Rotation::CW120);
-        }
-        if is_key_pressed(controls.rotate_180) {
-            game_state.rotate(Rotation::Center);
-        }
-        if is_key_pressed(controls.hard_drop) {
-            game_state.hard_drop();
-        }
-        if is_key_pressed(controls.reset) {
-            game_state.reset();
-        }
+        input_processor.update_state(&mut game_state);
         
         // draw flat-right
         clear_background(background);
 
         draw_text(format!("{}", get_fps()).as_str(), 20f32, 20f32, 20f32, WHITE);
+        draw_text(format!("{:.2}", get_time()).as_str(), 20f32, 40f32, 20f32, WHITE);
 
         // if matrix.contains((mouse_q, mouse_r)) {
         //     let mouse_idx = (mouse_q as usize, mouse_r as usize);
@@ -223,7 +190,7 @@ async fn main() {
             let queue_piece_name = game_state.queue.queue.get(queue_index).unwrap();
             let queue_piece = game_state.piece_gen.translate(queue_piece_name);
             for (q, r) in queue_piece.hexagons {
-                let (queue_q, queue_r) = (game_state.matrix.width as isize + 4, (-3 + (queue_index as isize * 5)));
+                let (queue_q, queue_r) = (game_state.matrix.width as isize + 4, (-4 + (queue_index as isize * 5)));
                 let (q, r) = (q + queue_q, r + queue_r);
                 let (x, y) = flat_hex_to_pixel((q, r), hex_size);
                 draw_hexagon(
