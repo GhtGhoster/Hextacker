@@ -156,29 +156,31 @@ pub struct PieceGen {
 impl PieceGen {
     pub fn default() -> Self {
         let mut piece_shapes = HashMap::new();
-        piece_shapes.insert('s', Piece::new([(-1, -1), (-1, 0 ), (0 , 0 ), (0 , 1 )], 's'));
-        piece_shapes.insert('z', Piece::new([(1 , -2), (1 , -1), (0 , 0 ), (0 , 1 )], 'z'));
-        piece_shapes.insert('b', Piece::new([(0 , -1), (0 , 0 ), (0 , 1 ), (1 , 0 )], 'b'));
-        piece_shapes.insert('d', Piece::new([(0 , -1), (0 , 0 ), (0 , 1 ), (-1, 1 )], 'd'));
-        piece_shapes.insert('j', Piece::new([(0 , -2), (0 , -1), (0 , 0 ), (-1, 1 )], 'j'));
-        piece_shapes.insert('l', Piece::new([(0 , -2), (0 , -1), (0 , 0 ), (1 , 0 )], 'l'));
+        piece_shapes.insert('s', Piece::new([(1, 0), (-1, 1), (-2, 1), (0, 0)], 's'));
+        piece_shapes.insert('z', Piece::new([(1, 0), (0, -1), (-1, -1), (0, 0)] , 'z'));
+        piece_shapes.insert('b', Piece::new([(1, 0), (-1, 0), (1, -1), (0, 0)], 'b'));
+        piece_shapes.insert('d', Piece::new([(1, 0), (-1, 0), (0, 0), (0, 1)], 'd'));
+        piece_shapes.insert('j', Piece::new([(1, 0), (-1, 0), (-1, -1), (0, 0)], 'j'));
+        piece_shapes.insert('l', Piece::new([(1, 0), (-2, 1), (-1, 0), (0, 0)], 'l'));
+        piece_shapes.insert('t', Piece::new([(0, 0), (-1, 1), (1, 0), (0, -1)], 't'));
+        piece_shapes.insert('o', Piece::new([(0, 1), (0, 0), (-1, 1), (-1, 0)], 'o'));
+        piece_shapes.insert('i', Piece::new([(-1, 0), (-2, 0), (0, 0), (1, 0)], 'i'));
+        piece_shapes.insert('c', Piece::new([(-1, 0), (0, 1), (1, 0), (-1, 1)], 'c'));
+        PieceGen {piece_shapes}
+    }
+
+    pub fn legacy() -> Self {
+        let mut piece_shapes = HashMap::new();
+        piece_shapes.insert('s', Piece::new([(0 , 0 ), (-1, -1), (-1, 0 ), (0 , 1 )], 's'));
+        piece_shapes.insert('z', Piece::new([(0 , 0 ), (1 , -2), (1 , -1), (0 , 1 )], 'z'));
+        piece_shapes.insert('b', Piece::new([(0 , 0 ), (0 , -1), (0 , 1 ), (1 , 0 )], 'b'));
+        piece_shapes.insert('d', Piece::new([(0 , 0 ), (0 , -1), (0 , 1 ), (-1, 1 )], 'd'));
+        piece_shapes.insert('j', Piece::new([(0 , 0 ), (0 , -2), (0 , -1), (-1, 1 )], 'j'));
+        piece_shapes.insert('l', Piece::new([(0 , 0 ), (0 , -2), (0 , -1), (1 , 0 )], 'l'));
+        piece_shapes.insert('t', Piece::new([(0 , 0 ), (0 , -1), (-1, 1 ), (1 , 0 )], 't'));
+        piece_shapes.insert('o', Piece::new([(0 , 0 ), (0 , -1), (-1, 0 ), (1 , -1)], 'o'));
+        piece_shapes.insert('i', Piece::new([(0 , 0 ), (0 , -2), (0, -1 ), (0 , 1 )], 'i'));
         piece_shapes.insert('c', Piece::new([(-1, 1 ), (-1, 0 ), (0 , -1), (1 , -1)], 'c'));
-        piece_shapes.insert('t', Piece::new([(0 , -1), (0 , 0 ), (-1, 1 ), (1 , 0 )], 't'));
-        piece_shapes.insert('o', Piece::new([(0 , -1), (0 , 0 ), (-1, 0 ), (1 , -1)], 'o'));
-        piece_shapes.insert('i', Piece::new([(0 , -2), (0, -1 ), (0 , 0 ), (0 , 1 )], 'i'));
-
-        // let mut piece_colors = HashMap::new();
-        // piece_colors.insert('s', Color::from_rgba(0  , 255, 0  , 255));
-        // piece_colors.insert('z', Color::from_rgba(255, 0  , 0  , 255));
-        // piece_colors.insert('b', Color::from_rgba(255, 127, 127, 255));
-        // piece_colors.insert('d', Color::from_rgba(0  , 191, 0  , 255));
-        // piece_colors.insert('j', Color::from_rgba(255, 127 , 0 , 255));
-        // piece_colors.insert('l', Color::from_rgba(0  , 0  , 255, 255));
-        // piece_colors.insert('c', Color::from_rgba(255, 0  , 127, 255));
-        // piece_colors.insert('t', Color::from_rgba(255, 0  , 255, 255));
-        // piece_colors.insert('o', Color::from_rgba(255, 255, 0  , 255));
-        // piece_colors.insert('i', Color::from_rgba(0  , 191, 191, 255));
-
         PieceGen {piece_shapes}
     }
 
@@ -235,7 +237,7 @@ impl GameState {
     }
 
     pub fn set_pos_spawn(&mut self) {
-        self.curr_piece.position = (4, (self.matrix.height - self.matrix.playable_height - 2) as isize);
+        self.curr_piece.position = (self.matrix.width as isize / 2, (self.matrix.height - self.matrix.playable_height - 2) as isize);
     }
 
     pub fn spawn_next_piece(&mut self) {
