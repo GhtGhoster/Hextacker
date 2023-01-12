@@ -90,24 +90,15 @@ impl InputProcessor {
 
         // one-time inputs
         if is_key_pressed(self.controls.hold) {
-            if self.das_left > 0f64 {
-                self.das_left = time_now - self.handling.das;
-                self.moves_side = 0;
-            }
-            if self.das_right > 0f64 {
-                self.das_right = time_now - self.handling.das;
-                self.moves_side = 0;
-            }
-            if self.das_sd > 0f64 {
-                self.das_sd = time_now - self.handling.das_sd;
-                self.moves_down = 0;
-            }
+            self.reset_on_new(time_now);
             game_state.hold();
         }
         if is_key_pressed(self.controls.hard_drop) {
+            self.reset_on_new(time_now);
             game_state.hard_drop();
         }
         if is_key_pressed(self.controls.reset) {
+            self.reset_on_new(time_now);
             game_state.reset();
         }
 
@@ -126,6 +117,21 @@ impl InputProcessor {
         }
         if is_key_pressed(self.controls.rotate_180) {
             game_state.rotate(Rotation::Center);
+        }
+    }
+
+    pub fn reset_on_new(&mut self, time_now: f64) {
+        if self.das_left > 0f64 {
+            self.das_left = time_now - self.handling.das;
+            self.moves_side = 0;
+        }
+        if self.das_right > 0f64 {
+            self.das_right = time_now - self.handling.das;
+            self.moves_side = 0;
+        }
+        if self.das_sd > 0f64 {
+            self.das_sd = time_now - self.handling.das_sd;
+            self.moves_down = 0;
         }
     }
 
