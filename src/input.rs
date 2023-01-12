@@ -85,10 +85,23 @@ impl InputProcessor {
     }
 
     pub fn update_state(&mut self, game_state: &mut GameState) {
-        self.process_das(game_state);
+        let time_now = get_time();
+        self.process_das(time_now, game_state);
 
         // one-time inputs
         if is_key_pressed(self.controls.hold) {
+            if self.das_left > 0f64 {
+                self.das_left = time_now - self.handling.das;
+                self.moves_side = 0;
+            }
+            if self.das_right > 0f64 {
+                self.das_right = time_now - self.handling.das;
+                self.moves_side = 0;
+            }
+            if self.das_sd > 0f64 {
+                self.das_sd = time_now - self.handling.das_sd;
+                self.moves_down = 0;
+            }
             game_state.hold();
         }
         if is_key_pressed(self.controls.hard_drop) {
@@ -116,8 +129,7 @@ impl InputProcessor {
         }
     }
 
-    pub fn process_das(&mut self, game_state: &mut GameState) {
-        let time_now = get_time();
+    pub fn process_das(&mut self, time_now: f64, game_state: &mut GameState) {
         match self.handling.das_type {
             DasType::Default => {
                 // softdrop
@@ -128,36 +140,35 @@ impl InputProcessor {
                 }
                 if is_key_released(self.controls.soft_drop) {
                     self.das_sd = -1f64;
-                    //self.moves_down = 0;
                 }
 
                 // movement key down
                 if is_key_pressed(self.controls.move_left) {
                     game_state.move_left();
-                    self.moves_side = 1;
                     self.das_right = -1f64;
+                    self.moves_side = 0;
                     self.das_left = time_now;
                 }
                 if is_key_pressed(self.controls.move_right) {
                     game_state.move_right();
-                    self.moves_side = 1;
                     self.das_left = -1f64;
+                    self.moves_side = 0;
                     self.das_right = time_now;
                 }
 
                 // movement key up
                 if is_key_released(self.controls.move_right) {
                     self.das_right = -1f64;
-                    // self.moves_side = 0;
                     if is_key_down(self.controls.move_left) {
                         self.das_left = time_now;
+                        self.moves_side = 0;
                     }
                 }
                 if is_key_released(self.controls.move_left) {
                     self.das_left = -1f64;
-                    // self.moves_side = 0;
                     if is_key_down(self.controls.move_right) {
                         self.das_right = time_now;
+                        self.moves_side = 0;
                     }
                 }
 
@@ -176,9 +187,9 @@ impl InputProcessor {
                             }
                         }
                     } else {
-                        let mut expected_moves = (duration / self.handling.arr) as isize + 1;
+                        let mut expected_moves = (duration / self.handling.arr) as isize;
                         if duration > 0f64 {
-                            if self.moves_side < 2 {
+                            if self.moves_side == 0 {
                                 game_state.move_direction(&move_direction);
                                 self.moves_side += 1;
                             }
